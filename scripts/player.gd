@@ -1,4 +1,7 @@
 extends CharacterBody3D
+class_name BQPlayer
+
+signal movement_state_changed(moving: bool)
 
 @export var move_speed := 7.0
 @export var acceleration := 22.0
@@ -6,10 +9,11 @@ extends CharacterBody3D
 @export var jump_velocity := 7.0
 @export var turn_speed := 10.0
 
+var is_moving := false
+
 func _physics_process(delta: float) -> void:
     var input_vector := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
     var direction := Vector3(input_vector.x, 0.0, input_vector.y)
-
     if direction.length_squared() > 1.0:
         direction = direction.normalized()
 
@@ -24,7 +28,12 @@ func _physics_process(delta: float) -> void:
     else:
         velocity.y = 0.0
 
-    if direction.length_squared() > 0.01:
+    var moving_now := direction.length_squared() > 0.01
+    if moving_now != is_moving:
+        is_moving = moving_now
+        movement_state_changed.emit(is_moving)
+
+    if moving_now:
         var target_rotation := atan2(direction.x, direction.z)
         rotation.y = lerp_angle(rotation.y, target_rotation, turn_speed * delta)
 
