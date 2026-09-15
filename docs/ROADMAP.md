@@ -19,11 +19,13 @@
 - [x] First mission framework
 - [x] Mission objective completion loop
 - [x] Basic enemy prototype
-- [ ] Basic combat
+- [x] Basic combat foundation
 - [ ] XP/progression persistence
 - [x] Mission HUD
 - [x] Modular street props
 - [x] Landmark layer
+- [x] Combat input/action foundation
+- [x] Enemy health/defeat foundation
 
 ## Phase 2 — Connected prototype
 - [ ] Firebase authentication
