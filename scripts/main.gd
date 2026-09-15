@@ -25,6 +25,7 @@ func _build_landly_city_prototype() -> void:
     _add_ground(city)
     _add_road(city, Vector3(0, 0.02, 0), Vector3(120, 0.1, 14))
     _add_road(city, Vector3(0, 0.03, 0), Vector3(14, 0.1, 120))
+    _add_secondary_roads(city)
     _add_sidewalks(city)
     _add_street_lights(city)
     CITY_PROPS.new().build(city)
@@ -35,7 +36,11 @@ func _build_landly_city_prototype() -> void:
         [Vector3(-28, 4, 25), Vector3(14, 8, 18)],
         [Vector3(28, 6, 25), Vector3(20, 12, 16)],
         [Vector3(-48, 3.5, 0), Vector3(10, 7, 18)],
-        [Vector3(48, 4.5, 0), Vector3(12, 9, 20)]
+        [Vector3(48, 4.5, 0), Vector3(12, 9, 20)],
+        [Vector3(-48, 5.5, -28), Vector3(10, 11, 14)],
+        [Vector3(48, 5.5, -28), Vector3(10, 11, 14)],
+        [Vector3(-48, 4.0, 30), Vector3(12, 8, 14)],
+        [Vector3(48, 4.0, 30), Vector3(12, 8, 14)]
     ]
 
     for item in building_data:
@@ -45,11 +50,63 @@ func _build_landly_city_prototype() -> void:
     _add_training_zone(city, Vector3(-38, 0.1, 38))
     _add_mission_zone(city, Vector3(38, 0.1, 38))
     _add_spawn_marker(city, Vector3(0, 0.1, -34))
+    _add_city_districts(city)
+    _add_world_markers(city)
 
     landmarks = Node3D.new()
     landmarks.name = "Landmarks"
     city.add_child(landmarks)
     CITY_LANDMARKS.new().build(landmarks)
+
+func _add_secondary_roads(parent: Node3D) -> void:
+    var horizontal_roads := [-36.0, 36.0]
+    var vertical_roads := [-36.0, 36.0]
+    for z in horizontal_roads:
+        _add_road(parent, Vector3(0, 0.025, z), Vector3(120, 0.1, 8))
+    for x in vertical_roads:
+        _add_road(parent, Vector3(x, 0.025, 0), Vector3(8, 0.1, 120))
+
+func _add_city_districts(parent: Node3D) -> void:
+    _add_district_marker(parent, Vector3(-42, 0.14, -44), "NORTH DISTRICT")
+    _add_district_marker(parent, Vector3(42, 0.14, -44), "EAST DISTRICT")
+    _add_district_marker(parent, Vector3(-42, 0.14, 44), "TRAINING DISTRICT")
+    _add_district_marker(parent, Vector3(42, 0.14, 44), "MISSION DISTRICT")
+
+func _add_district_marker(parent: Node3D, position: Vector3, title: String) -> void:
+    var root := Node3D.new()
+    root.name = title.replace(" ", "")
+    root.position = position
+    parent.add_child(root)
+    _add_box(root, Vector3(0, 1.8, 0), Vector3(0.25, 3.6, 0.25), Color(0.18, 0.24, 0.32), "DistrictPost")
+    var label := Label3D.new()
+    label.text = title
+    label.font_size = 28
+    label.outline_size = 7
+    label.position = Vector3(0, 3.7, 0)
+    label.modulate = Color(0.55, 0.85, 1.0)
+    label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+    root.add_child(label)
+
+func _add_world_markers(parent: Node3D) -> void:
+    _add_marker(parent, Vector3(0, 0.16, -34), "SPAWN")
+    _add_marker(parent, Vector3(-38, 0.16, 38), "TRAINING")
+    _add_marker(parent, Vector3(38, 0.16, 38), "MISSION")
+    _add_marker(parent, Vector3(0, 0.16, 42), "HQ")
+
+func _add_marker(parent: Node3D, position: Vector3, title: String) -> void:
+    var root := Node3D.new()
+    root.name = title + "Marker"
+    root.position = position
+    parent.add_child(root)
+    _add_box(root, Vector3.ZERO, Vector3(4.0, 0.08, 1.0), Color(0.08, 0.3, 0.48), title + "Pad")
+    var label := Label3D.new()
+    label.text = title
+    label.font_size = 24
+    label.outline_size = 6
+    label.position = Vector3(0, 0.4, 0)
+    label.modulate = Color(0.65, 0.9, 1.0)
+    label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+    root.add_child(label)
 
 func _add_ground(parent: Node3D) -> void:
     var body := StaticBody3D.new()
@@ -115,6 +172,14 @@ func _add_hq(parent: Node3D, position: Vector3) -> void:
     _add_box(body, position, Vector3(28, 8, 18), Color(0.04, 0.12, 0.2), "BQ Sqwad HQ")
     _add_box(body, position + Vector3(0, 4.2, -9.3), Vector3(12, 1.0, 0.6), Color(0.15, 0.55, 0.9), "HQ Entrance")
     _add_box(body, position + Vector3(0, 0.1, -9.5), Vector3(6, 0.2, 3), Color(0.08, 0.25, 0.4), "HQ Plaza")
+    var label := Label3D.new()
+    label.text = "BQ SQWAD HQ"
+    label.font_size = 48
+    label.outline_size = 10
+    label.position = position + Vector3(0, 1.8, -9.65)
+    label.modulate = Color(0.65, 0.9, 1.0)
+    label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+    parent.add_child(label)
 
 func _add_training_zone(parent: Node3D, position: Vector3) -> void:
     var body := StaticBody3D.new()
@@ -122,6 +187,7 @@ func _add_training_zone(parent: Node3D, position: Vector3) -> void:
     parent.add_child(body)
     _add_box(body, position, Vector3(24, 0.2, 18), Color(0.07, 0.13, 0.18), "Training Ground")
     _add_box(body, position + Vector3(0, 1.2, -7), Vector3(18, 2.4, 0.5), Color(0.1, 0.25, 0.38), "Training Wall")
+    _add_box(body, position + Vector3(-7, 1.0, 0), Vector3(0.5, 2.0, 8), Color(0.1, 0.25, 0.38), "Training Wall")
 
 func _add_mission_zone(parent: Node3D, position: Vector3) -> void:
     var body := StaticBody3D.new()
