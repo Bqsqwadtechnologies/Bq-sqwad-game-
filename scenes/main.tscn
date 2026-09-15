@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/mission_system.gd" id="3_mission"]
 [ext_resource type="Script" path="res://scripts/mission_hud.gd" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/enemy_prototype.tscn" id="5_enemy"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -32,17 +33,6 @@ content_margin_top = 14.0
 content_margin_right = 18.0
 content_margin_bottom = 14.0
 
-[sub_resource type="StyleBoxFlat" id="StatusPanel"]
-bg_color = Color(0.04, 0.16, 0.22, 0.9)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-content_margin_left = 8.0
-content_margin_top = 4.0
-content_margin_right = 8.0
-content_margin_bottom = 4.0
-
 [node name="LandlyCity" type="Node3D"]
 script = ExtResource("1_main")
 
@@ -59,6 +49,9 @@ script = ExtResource("3_mission")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector3(0, 1.1, 8)
+
+[node name="MissionScout" parent="." instance=ExtResource("5_enemy")]
+position = Vector3(30, 1.0, 32)
 
 [node name="PrototypeLabel" type="Label" parent="."]
 offset_left = 24.0
