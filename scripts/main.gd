@@ -2,6 +2,7 @@ extends Node3D
 
 const WORLD_MATERIALS := preload("res://scripts/world_materials.gd")
 const CITY_LANDMARKS := preload("res://scripts/city_landmarks.gd")
+const CITY_PROPS := preload("res://scripts/city_props.gd")
 
 var city: Node3D
 var landmarks: Node3D
@@ -25,6 +26,7 @@ func _build_landly_city_prototype() -> void:
     _add_road(city, Vector3(0, 0.03, 0), Vector3(14, 0.1, 120))
     _add_sidewalks(city)
     _add_street_lights(city)
+    CITY_PROPS.new().build(city)
 
     var building_data := [
         [Vector3(-28, 5, -25), Vector3(16, 10, 14)],
@@ -127,6 +129,7 @@ func _add_mission_zone(parent: Node3D, position: Vector3) -> void:
     _add_box(body, position, Vector3(24, 0.2, 18), Color(0.12, 0.1, 0.16), "Mission Ground")
     _add_box(body, position + Vector3(-9, 2, 0), Vector3(0.5, 4, 12), Color(0.18, 0.12, 0.2), "Mission Barrier")
     _add_box(body, position + Vector3(9, 2, 0), Vector3(0.5, 4, 12), Color(0.18, 0.12, 0.2), "Mission Barrier")
+    _add_box(body, position + Vector3(0, 0.3, 0), Vector3(3.0, 0.12, 3.0), Color(0.1, 0.55, 0.8), "SignalMarker")
 
 func _add_spawn_marker(parent: Node3D, position: Vector3) -> void:
     var body := StaticBody3D.new()
