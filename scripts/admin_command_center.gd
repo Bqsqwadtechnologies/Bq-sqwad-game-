@@ -19,13 +19,21 @@ func _ready() -> void:
     store.load_catalog()
     _build_dashboard()
     _build_gate()
-    visible = true
+    # Never block normal gameplay with the development admin console.
+    dashboard.visible = false
+    gate.visible = false
+    visible = false
 
 func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F8:
-        if gate.visible:
-            return
-        visible = not visible
+        if not visible:
+            visible = true
+            gate.visible = true
+            dashboard.visible = false
+        else:
+            visible = false
+            gate.visible = false
+            dashboard.visible = false
         get_viewport().set_input_as_handled()
 
 func _build_dashboard() -> void:
@@ -36,7 +44,6 @@ func _build_dashboard() -> void:
     backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     backdrop.color = Color(0.006, 0.012, 0.028, 0.97)
     dashboard.add_child(backdrop)
-
     var card := PanelContainer.new()
     card.set_anchors_preset(Control.PRESET_CENTER)
     card.position = Vector2(55, 30)
@@ -45,7 +52,6 @@ func _build_dashboard() -> void:
     var shell := VBoxContainer.new()
     shell.add_theme_constant_override("separation", 0)
     card.add_child(shell)
-
     var header := HBoxContainer.new()
     header.custom_minimum_size.y = 76
     header.add_theme_constant_override("separation", 14)
@@ -68,9 +74,8 @@ func _build_dashboard() -> void:
     header.add_child(identity)
     var close := Button.new()
     close.text = "CLOSE  [F8]"
-    close.pressed.connect(func(): visible = false)
+    close.pressed.connect(func(): visible = false; gate.visible = false; dashboard.visible = false)
     header.add_child(close)
-
     var body := HBoxContainer.new()
     body.size_flags_vertical = Control.SIZE_EXPAND_FILL
     shell.add_child(body)
@@ -85,7 +90,6 @@ func _build_dashboard() -> void:
         b.alignment = HORIZONTAL_ALIGNMENT_LEFT
         b.pressed.connect(_open_tab.bind(tab))
         nav.add_child(b)
-
     content = VBoxContainer.new()
     content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     content.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -95,7 +99,6 @@ func _build_dashboard() -> void:
     status.text = "ADMIN SESSION • LOCAL DEVELOPMENT MODE"
     status.custom_minimum_size.y = 26
     shell.add_child(status)
-
     asset_dialog = FileDialog.new()
     asset_dialog.access = FileDialog.ACCESS_FILESYSTEM
     asset_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
@@ -354,9 +357,50 @@ func _assets() -> void:
         _scan("res://assets/" + key, counts, key)
         _stat(content, String(key).to_upper(), str(counts[key]))
     var note := Label.new()
-    note.text = "Runtime character assets are stored under user://bq_sqwad_admin/assets. Repository assets remain source-controlled on main."
+    note.text = "Runtime character assets are stored under user://bq_sqwad_assets until the production asset pipeline is connected."
     note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     content.add_child(note)
+
+func _progression() -> void:
+    _stat(content, "XP", "LOCAL PROTOTYPE")
+    _stat(content, "UNLOCKS", "READY FOR PERSISTENCE")
+    _stat(content, "CLOUD SAVE", "NOT CONNECTED")
+
+func _settings() -> void:
+    _stat(content, "AUTH", "DEVELOPMENT GATE")
+    _stat(content, "FIREBASE", "READY FOR INTEGRATION")
+    _stat(content, "ADMIN EMAIL", ADMIN_EMAIL)
+    var note := Label.new()
+    note.text = "Production admin authorization must move to Firebase Auth and server-side claims before release."
+    note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    content.add_child(note)
+
+func _button(parent: Container, text: String, callback: Callable) -> void:
+    var button := Button.new()
+    button.text = text
+    button.pressed.connect(callback)
+    parent.add_child(button)
+
+func _stat(parent: Container, label_text: String, value_text: String) -> void:
+    var box := VBoxContainer.new()
+    box.custom_minimum_size = Vector2(190, 58)
+    parent.add_child(box)
+    var label := Label.new()
+    label.text = label_text
+    label.add_theme_font_size_override("font_size", 11)
+    box.add_child(label)
+    var value := Label.new()
+    value.text = value_text
+    value.add_theme_font_size_override("font_size", 17)
+    box.add_child(value)
+
+func _csv(value: String) -> Array[String]:
+    var result: Array[String] = []
+    for item in value.split(","):
+        var clean := item.strip_edges()
+        if not clean.is_empty():
+            result.append(clean)
+    return result
 
 func _scan(path: String, counts: Dictionary, key: String) -> void:
     var dir := DirAccess.open(path)
@@ -364,59 +408,13 @@ func _scan(path: String, counts: Dictionary, key: String) -> void:
         return
     dir.list_dir_begin()
     while true:
-        var name := dir.get_next()
-        if name.is_empty():
+        var entry := dir.get_next()
+        if entry.is_empty():
             break
-        if name.begins_with("."):
+        if entry == "." or entry == "..":
             continue
         if dir.current_is_dir():
-            _scan(path.path_join(name), counts, key)
+            _scan(path + "/" + entry, counts, key)
         else:
             counts[key] += 1
     dir.list_dir_end()
-
-func _progression() -> void:
-    _stat(content, "XP", "MISSION SYSTEM")
-    _stat(content, "UNLOCKS", "CHARACTER CATALOG READY")
-    _stat(content, "CLOUD SAVE", "FIREBASE PENDING")
-    _stat(content, "AUTHORITATIVE DATA", "SERVER INTEGRATION PENDING")
-
-func _settings() -> void:
-    _stat(content, "ADMIN", ADMIN_EMAIL)
-    _stat(content, "ENGINE", "GODOT 4.7.2")
-    _stat(content, "BRANCH", "main")
-    var checklist := Label.new()
-    checklist.text = "PRODUCTION SECURITY\n✓ Admin identity configured\n✓ Character catalog is data-driven\n✓ Character JSON import\n✓ Asset import pipeline\n□ Firebase Auth enforcement\n□ Custom admin claims / server authorization\n□ Firestore character catalog\n□ Firebase Storage asset pipeline\n□ Audit log"
-    checklist.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-    content.add_child(checklist)
-
-func _stat(parent: Container, name: String, value: String) -> void:
-    var panel := PanelContainer.new()
-    panel.custom_minimum_size = Vector2(210, 70)
-    parent.add_child(panel)
-    var box := VBoxContainer.new()
-    panel.add_child(box)
-    var a := Label.new()
-    a.text = name
-    a.add_theme_font_size_override("font_size", 10)
-    box.add_child(a)
-    var b := Label.new()
-    b.text = value
-    b.add_theme_font_size_override("font_size", 17)
-    b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-    box.add_child(b)
-
-func _button(parent: Container, text: String, callback: Callable) -> void:
-    var b := Button.new()
-    b.text = text
-    b.custom_minimum_size.y = 36
-    b.pressed.connect(callback)
-    parent.add_child(b)
-
-func _csv(value: String) -> Array[String]:
-    var result: Array[String] = []
-    for part in value.split(","):
-        var clean := part.strip_edges()
-        if not clean.is_empty():
-            result.append(clean)
-    return result
