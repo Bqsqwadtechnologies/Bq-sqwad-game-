@@ -3,6 +3,7 @@ extends Node3D
 const WORLD_MATERIALS := preload("res://scripts/world_materials.gd")
 const CITY_LANDMARKS := preload("res://scripts/city_landmarks.gd")
 const CITY_PROPS := preload("res://scripts/city_props.gd")
+const MISSION_INTERACTION := preload("res://scripts/mission_interaction.gd")
 
 var city: Node3D
 var landmarks: Node3D
@@ -130,6 +131,20 @@ func _add_mission_zone(parent: Node3D, position: Vector3) -> void:
     _add_box(body, position + Vector3(-9, 2, 0), Vector3(0.5, 4, 12), Color(0.18, 0.12, 0.2), "Mission Barrier")
     _add_box(body, position + Vector3(9, 2, 0), Vector3(0.5, 4, 12), Color(0.18, 0.12, 0.2), "Mission Barrier")
     _add_box(body, position + Vector3(0, 0.3, 0), Vector3(3.0, 0.12, 3.0), Color(0.1, 0.55, 0.8), "SignalMarker")
+
+    var interaction := Area3D.new()
+    interaction.name = "SignalInteraction"
+    interaction.position = position + Vector3(0, 1.2, 0)
+    interaction.collision_layer = 0
+    interaction.collision_mask = 1
+    interaction.set_script(MISSION_INTERACTION)
+    parent.add_child(interaction)
+
+    var collision := CollisionShape3D.new()
+    var shape := SphereShape3D.new()
+    shape.radius = 3.5
+    collision.shape = shape
+    interaction.add_child(collision)
 
 func _add_spawn_marker(parent: Node3D, position: Vector3) -> void:
     var body := StaticBody3D.new()
