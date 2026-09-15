@@ -1,0 +1,66 @@
+name: Build Test APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.gd'
+      - '**/*.tscn'
+      - '**/*.godot'
+      - 'project.godot'
+      - '.github/workflows/test-apk.yml'
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: '4.7.2'
+
+jobs:
+  build-test-apk:
+    name: Build Android Test APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Download Godot
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+          unzip -q Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+          chmod +x Godot_v${GODOT_VERSION}-stable_linux.x86_64
+          sudo mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+
+      - name: Download Android export templates
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          unzip -q Godot_v${GODOT_VERSION}-stable_export_templates.tpz -d /tmp/godot_templates
+          cp -R /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable/
+
+      - name: Validate project
+        run: |
+          mkdir -p build
+          godot --headless --path . --editor --quit --verbose
+
+      - name: Export test APK
+        run: |
+          mkdir -p build/android
+          godot --headless --path . --export-debug "Android" build/android/BQ-Sqwad-Game-test.apk
+
+      - name: Verify APK
+        run: |
+          test -s build/android/BQ-Sqwad-Game-test.apk
+          file build/android/BQ-Sqwad-Game-test.apk
+
+      - name: Upload test APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BQ-Sqwad-Game-test-apk
+          path: build/android/BQ-Sqwad-Game-test.apk
+          if-no-files-found: error
+          retention-days: 14
