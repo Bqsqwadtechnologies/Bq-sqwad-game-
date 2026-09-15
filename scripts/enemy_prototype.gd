@@ -1,15 +1,24 @@
 extends CharacterBody3D
 
+signal defeated
+
 @export var patrol_radius := 5.0
 @export var patrol_speed := 2.2
+@export var max_health := 100
 
+var health := 100
 var origin := Vector3.ZERO
 var patrol_time := 0.0
+var defeated_state := false
 
 func _ready() -> void:
     origin = global_position
+    health = max_health
 
 func _physics_process(delta: float) -> void:
+    if defeated_state:
+        return
+
     patrol_time += delta
     var offset := Vector3(sin(patrol_time * 0.55) * patrol_radius, 0.0, cos(patrol_time * 0.4) * patrol_radius)
     var target := origin + offset
@@ -31,3 +40,13 @@ func _physics_process(delta: float) -> void:
         velocity.y = 0.0
 
     move_and_slide()
+
+func take_damage(amount: int) -> void:
+    if defeated_state:
+        return
+    health = max(0, health - amount)
+    if health == 0:
+        defeated_state = true
+        velocity = Vector3.ZERO
+        defeated.emit()
+        queue_free()
