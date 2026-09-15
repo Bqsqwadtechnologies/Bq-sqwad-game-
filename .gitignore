@@ -1,0 +1,29 @@
+# Godot 4 generated files
+.godot/
+.import/
+.export/
+
+# Local/editor files
+.vscode/
+.idea/
+*.tmp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secrets / local configuration
+.env
+.env.*
+firebase-service-account*.json
+service-account*.json
+
+# Build outputs
+build/
+builds/
+exports/
+*.apk
+*.aab
+*.exe
+*.zip
