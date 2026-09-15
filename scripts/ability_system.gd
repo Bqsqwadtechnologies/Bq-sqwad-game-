@@ -59,7 +59,7 @@ func use_secondary() -> void:
         "ziking":
             _iron_guard()
         "goodshina":
-            _blink(player)
+            _vanish_blink(player)
         "star":
             _toggle_flight()
         "ella":
@@ -97,10 +97,21 @@ func _iron_guard() -> void:
     power_state_changed.emit("Iron Guard", false)
     ability_used.emit("Iron Guard")
 
-func _blink(player: CharacterBody3D) -> void:
+func _vanish_blink(player: CharacterBody3D) -> void:
+    hidden = true
+    if player.has_method("set_character_visibility"):
+        player.set_character_visibility(false)
+    power_state_changed.emit("Disappearance", true)
+
     var forward := -player.global_transform.basis.z
     player.global_position += forward * 6.0
-    ability_used.emit("Blink")
+    ability_used.emit("Disappear + Teleport")
+
+    await get_tree().create_timer(2.0).timeout
+    hidden = false
+    if is_instance_valid(player) and player.has_method("set_character_visibility"):
+        player.set_character_visibility(true)
+    power_state_changed.emit("Disappearance", false)
 
 func _toggle_flight() -> void:
     flying = not flying
@@ -116,10 +127,6 @@ func _speed_burst(player: CharacterBody3D) -> void:
     var forward := -player.global_transform.basis.z
     player.velocity += forward * 16.0
     ability_used.emit("Speed Burst")
-
-func set_hidden(enabled: bool) -> void:
-    hidden = enabled
-    power_state_changed.emit("Disappearance", enabled)
 
 func _ray_damage(player: CharacterBody3D, damage: int, distance: float) -> void:
     var space_state := player.get_world_3d().direct_space_state
