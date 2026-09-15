@@ -7,19 +7,31 @@ var active_mission := false
 var mission_title := ""
 var objective := ""
 var xp_reward := 0
+var objective_reached := false
 
 func _ready() -> void:
     start_first_mission()
 
 func start_first_mission() -> void:
     active_mission = true
+    objective_reached = false
     mission_title = "Signal in Landly City"
     objective = "Reach the mission zone and investigate the signal."
     xp_reward = 100
     mission_changed.emit(mission_title, objective, xp_reward)
 
+func update_player_position(player_position: Vector3) -> void:
+    if not active_mission or objective_reached:
+        return
+    var mission_center := Vector3(38.0, 0.0, 38.0)
+    var distance := Vector2(player_position.x, player_position.z).distance_to(Vector2(mission_center.x, mission_center.z))
+    if distance <= 10.0:
+        objective_reached = true
+        objective = "Signal located. Investigate the area."
+        mission_changed.emit(mission_title, objective, xp_reward)
+
 func complete_current_mission() -> void:
-    if not active_mission:
+    if not active_mission or not objective_reached:
         return
     active_mission = false
     mission_completed.emit(xp_reward)
