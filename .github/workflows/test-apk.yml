@@ -4,13 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - '**/*.gd'
-      - '**/*.tscn'
-      - '**/*.godot'
-      - 'project.godot'
-      - 'export_presets.cfg'
-      - '.github/workflows/test-apk.yml'
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
