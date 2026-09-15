@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy_prototype.gd" id="1_enemy"]
+
+[sub_resource type="CapsuleMesh" id="EnemyMesh"]
+radius = 0.55
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="EnemyShape"]
+radius = 0.55
+height = 1.8
+
+[node name="EnemyPrototype" type="CharacterBody3D"]
+script = ExtResource("1_enemy")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+mesh = SubResource("EnemyMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("EnemyShape")
+
+[node name="Status" type="Label3D" parent="."]
+position = Vector3(0, 1.5, 0)
+text = "SCOUT"
+font_size = 28
+outline_size = 6
