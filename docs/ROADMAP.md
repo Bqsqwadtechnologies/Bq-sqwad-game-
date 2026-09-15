@@ -7,6 +7,8 @@
 - [x] Character foundation documented
 - [x] Godot project uploaded
 - [x] Base folder structure committed
+- [x] Administrator command center foundation
+- [x] Data-driven character catalog
 
 ## Phase 1 — Alpha 0.1
 - [x] Third-person controller
@@ -26,12 +28,19 @@
 - [x] Landmark layer
 - [x] Combat input/action foundation
 - [x] Enemy health/defeat foundation
+- [x] Admin character studio
+- [x] Character profile JSON import
+- [x] Runtime character asset import pipeline
 
 ## Phase 2 — Connected prototype
 - [ ] Firebase authentication
 - [ ] Persistent player profile
 - [ ] Cloud progression
 - [ ] Character unlock data
+- [ ] Firebase admin claims for isaacoshiomole0@gmail.com
+- [ ] Firestore character catalog
+- [ ] Firebase Storage character assets
+- [ ] Admin audit log
 
 ## Phase 3 — Online foundation
 - [ ] Dedicated multiplayer architecture
