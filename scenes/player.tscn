@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/combat_system.gd" id="2_combat"]
 [ext_resource type="Script" path="res://scripts/character_system.gd" id="3_character"]
+[ext_resource type="Script" path="res://scripts/ability_system.gd" id="4_ability"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape_player"]
 radius = 0.45
@@ -46,6 +47,9 @@ script = ExtResource("3_character")
 
 [node name="CombatSystem" type="Node" parent="."]
 script = ExtResource("2_combat")
+
+[node name="AbilitySystem" type="Node" parent="."]
+script = ExtResource("4_ability")
 
 [node name="CameraRig" type="SpringArm3D" parent="."]
 position = Vector3(0, 1.5, 0)
