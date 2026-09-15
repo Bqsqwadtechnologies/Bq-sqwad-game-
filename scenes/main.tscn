@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/mission_system.gd" id="3_mission"]
+[ext_resource type="Script" path="res://scripts/mission_hud.gd" id="4_hud"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -14,6 +15,33 @@ tonemap_mode = 2
 
 [sub_resource type="BoxShape3D" id="SpawnFloor"]
 size = Vector3(6, 0.2, 6)
+
+[sub_resource type="StyleBoxFlat" id="HudPanel"]
+bg_color = Color(0.025, 0.045, 0.075, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.12, 0.48, 0.72, 0.9)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
+
+[sub_resource type="StyleBoxFlat" id="StatusPanel"]
+bg_color = Color(0.04, 0.16, 0.22, 0.9)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
 
 [node name="LandlyCity" type="Node3D"]
 script = ExtResource("1_main")
@@ -37,16 +65,54 @@ offset_left = 24.0
 offset_top = 20.0
 offset_right = 650.0
 offset_bottom = 70.0
+theme_override_colors/font_color = Color(0.72, 0.88, 1, 1)
 theme_override_font_sizes/font_size = 24
-text = "BQ SQWAD • LANDLY CITY • ALPHA 0.1"
+text = "BQ SQWAD  •  LANDLY CITY  •  ALPHA 0.1"
 
-[node name="MissionLabel" type="Label" parent="."]
+[node name="MissionHUD" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")
+
+[node name="Panel" type="PanelContainer" parent="MissionHUD"]
 offset_left = 24.0
-offset_top = 62.0
+offset_top = 76.0
+offset_right = 500.0
+offset_bottom = 224.0
+theme_override_styles/panel = SubResource("HudPanel")
+
+[node name="Margin" type="MarginContainer" parent="MissionHUD/Panel"]
+
+[node name="VBox" type="VBoxContainer" parent="MissionHUD/Panel/Margin"]
+theme_override_constants/separation = 5
+
+[node name="MissionTitle" type="Label" parent="MissionHUD/Panel/Margin/VBox"]
+theme_override_colors/font_color = Color(0.55, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "MISSION  /  SIGNAL IN LANDLY CITY"
+
+[node name="Objective" type="Label" parent="MissionHUD/Panel/Margin/VBox"]
+theme_override_colors/font_color = Color(0.92, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "Reach the mission zone and investigate the signal."
+autowrap_mode = 2
+
+[node name="Reward" type="Label" parent="MissionHUD/Panel/Margin/VBox"]
+theme_override_colors/font_color = Color(0.55, 0.68, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "REWARD  •  100 XP"
+
+[node name="Status" type="Label" parent="MissionHUD/Panel/Margin/VBox"]
+theme_override_colors/font_color = Color(0.5, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "ACTIVE"
+
+[node name="Hint" type="Label" parent="MissionHUD"]
+offset_left = 24.0
+offset_top = 680.0
 offset_right = 700.0
-offset_bottom = 120.0
-theme_override_font_sizes/font_size = 16
-text = "MISSION: Signal in Landly City\nReach the mission zone and investigate the signal."
+offset_bottom = 708.0
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 0.9)
+theme_override_font_sizes/font_size = 13
+text = "WASD / ARROWS  Move    •    SPACE  Jump"
 
 [node name="FloorMarker" type="StaticBody3D" parent="."]
 position = Vector3(0, -0.05, 8)
