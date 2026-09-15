@@ -21,14 +21,19 @@ func start_first_mission() -> void:
     mission_changed.emit(mission_title, objective, xp_reward)
 
 func update_player_position(player_position: Vector3) -> void:
-    if not active_mission or objective_reached:
+    if not active_mission:
         return
+
     var mission_center := Vector3(38.0, 0.0, 38.0)
     var distance := Vector2(player_position.x, player_position.z).distance_to(Vector2(mission_center.x, mission_center.z))
-    if distance <= 10.0:
+
+    if not objective_reached and distance <= 10.0:
         objective_reached = true
-        objective = "Signal located. Investigate the area."
+        objective = "Signal located. Move to the signal marker to complete the investigation."
         mission_changed.emit(mission_title, objective, xp_reward)
+
+    if objective_reached and distance <= 3.0:
+        complete_current_mission()
 
 func complete_current_mission() -> void:
     if not active_mission or not objective_reached:
