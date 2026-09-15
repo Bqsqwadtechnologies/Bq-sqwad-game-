@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://scripts/mission_system.gd" id="3_mission"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -25,6 +26,9 @@ rotation_degrees = Vector3(-52, -28, 0)
 light_energy = 1.1
 shadow_enabled = true
 
+[node name="MissionSystem" type="Node" parent="."]
+script = ExtResource("3_mission")
+
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector3(0, 1.1, 8)
 
@@ -35,6 +39,14 @@ offset_right = 650.0
 offset_bottom = 70.0
 theme_override_font_sizes/font_size = 24
 text = "BQ SQWAD • LANDLY CITY • ALPHA 0.1"
+
+[node name="MissionLabel" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 62.0
+offset_right = 700.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 16
+text = "MISSION: Signal in Landly City\nReach the mission zone and investigate the signal."
 
 [node name="FloorMarker" type="StaticBody3D" parent="."]
 position = Vector3(0, -0.05, 8)
