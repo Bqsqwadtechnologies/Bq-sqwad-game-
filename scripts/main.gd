@@ -1,12 +1,22 @@
 extends Node3D
 
 const WORLD_MATERIALS := preload("res://scripts/world_materials.gd")
+const CITY_LANDMARKS := preload("res://scripts/city_landmarks.gd")
+
+var city: Node3D
+var landmarks: Node3D
 
 func _ready() -> void:
     _build_landly_city_prototype()
 
+func _process(_delta: float) -> void:
+    var mission_system := get_node_or_null("MissionSystem")
+    var player := get_node_or_null("Player")
+    if mission_system != null and player != null:
+        mission_system.update_player_position(player.global_position)
+
 func _build_landly_city_prototype() -> void:
-    var city := Node3D.new()
+    city = Node3D.new()
     city.name = "LandlyCityPrototype"
     add_child(city)
 
@@ -32,6 +42,11 @@ func _build_landly_city_prototype() -> void:
     _add_training_zone(city, Vector3(-38, 0.1, 38))
     _add_mission_zone(city, Vector3(38, 0.1, 38))
     _add_spawn_marker(city, Vector3(0, 0.1, -34))
+
+    landmarks = Node3D.new()
+    landmarks.name = "Landmarks"
+    city.add_child(landmarks)
+    CITY_LANDMARKS.new().build(landmarks)
 
 func _add_ground(parent: Node3D) -> void:
     var body := StaticBody3D.new()
