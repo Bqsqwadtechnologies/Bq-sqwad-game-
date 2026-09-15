@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/combat_system.gd" id="2_combat"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape_player"]
 radius = 0.45
@@ -38,6 +39,9 @@ material_override = SubResource("PlayerMaterial")
 position = Vector3(0, 2.0, 0)
 mesh = SubResource("HeadMesh")
 material_override = SubResource("HeadMaterial")
+
+[node name="CombatSystem" type="Node" parent="."]
+script = ExtResource("2_combat")
 
 [node name="CameraRig" type="SpringArm3D" parent="."]
 position = Vector3(0, 1.5, 0)
