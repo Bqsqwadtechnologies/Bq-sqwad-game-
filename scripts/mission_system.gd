@@ -49,6 +49,9 @@ func complete_current_mission() -> void:
     if not active_mission or not objective_reached:
         return
     active_mission = false
+    var progression := get_parent().get_node_or_null("ProgressionSystem")
+    if progression != null and progression.has_method("add_xp"):
+        progression.add_xp(xp_reward)
     mission_completed.emit(xp_reward)
     if mission_index + 1 < MISSIONS.size():
         start_mission(mission_index + 1)
