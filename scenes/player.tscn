@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/combat_system.gd" id="2_combat"]
 [ext_resource type="Script" path="res://scripts/character_system.gd" id="3_character"]
 [ext_resource type="Script" path="res://scripts/ability_system.gd" id="4_ability"]
+[ext_resource type="Script" path="res://scripts/character_presentation.gd" id="5_presentation"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape_player"]
 radius = 0.45
@@ -44,6 +45,9 @@ material_override = SubResource("HeadMaterial")
 
 [node name="CharacterSystem" type="Node" parent="."]
 script = ExtResource("3_character")
+
+[node name="CharacterPresentation" type="Node" parent="."]
+script = ExtResource("5_presentation")
 
 [node name="CombatSystem" type="Node" parent="."]
 script = ExtResource("2_combat")
