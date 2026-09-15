@@ -101,11 +101,11 @@ text = "ACTIVE"
 [node name="Hint" type="Label" parent="MissionHUD"]
 offset_left = 24.0
 offset_top = 680.0
-offset_right = 700.0
+offset_right = 850.0
 offset_bottom = 708.0
 theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 0.9)
 theme_override_font_sizes/font_size = 13
-text = "WASD / ARROWS  Move    •    SPACE  Jump"
+text = "WASD / ARROWS  Move    •    SPACE  Jump    •    E  Investigate"
 
 [node name="FloorMarker" type="StaticBody3D" parent="."]
 position = Vector3(0, -0.05, 8)
