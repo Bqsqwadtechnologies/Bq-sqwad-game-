@@ -24,6 +24,9 @@ textures/default_filters/use_nearest_mipmap_filter=false
 textures/vram_compression/import_etc2_astc=true
 textures/vram_compression/import_s3tc_bptc=true
 
+[autoload]
+BQMultiplayerManager="*res://scripts/multiplayer_manager.gd"
+
 [input]
 move_forward={"deadzone": 0.2, "events": [Object(InputEventKey,"physical_keycode":87), Object(InputEventKey,"physical_keycode":4194320)]}
 move_back={"deadzone": 0.2, "events": [Object(InputEventKey,"physical_keycode":83), Object(InputEventKey,"physical_keycode":4194322)]}
