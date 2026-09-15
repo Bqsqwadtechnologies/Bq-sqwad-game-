@@ -5,21 +5,25 @@
 - [x] Game vision documented
 - [x] Landly City world foundation documented
 - [x] Character foundation documented
-- [ ] Godot project uploaded
-- [ ] Base folder structure committed
+- [x] Godot project uploaded
+- [x] Base folder structure committed
 
 ## Phase 1 — Alpha 0.1
-- [ ] Third-person controller
-- [ ] Camera
-- [ ] Basic movement
-- [ ] Prototype Landly City district
-- [ ] BQ Sqwad HQ
-- [ ] Ziking placeholder/production asset
-- [ ] Basic interaction system
-- [ ] First mission
-- [ ] Basic enemy
+- [x] Third-person controller
+- [x] Camera
+- [x] Basic movement
+- [x] Prototype Landly City district
+- [x] BQ Sqwad HQ
+- [ ] Ziking production asset
+- [x] Basic interaction foundation
+- [x] First mission framework
+- [x] Mission objective completion loop
+- [x] Basic enemy prototype
 - [ ] Basic combat
-- [ ] XP/progression
+- [ ] XP/progression persistence
+- [x] Mission HUD
+- [x] Modular street props
+- [x] Landmark layer
 
 ## Phase 2 — Connected prototype
 - [ ] Firebase authentication
