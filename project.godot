@@ -28,6 +28,7 @@ textures/vram_compression/import_s3tc_bptc=true
 [autoload]
 BQMultiplayerManager="*res://scripts/multiplayer_manager.gd"
 BQGameAudio="*res://scripts/game_audio.gd"
+BQProfessionalCity="*res://scripts/pro_city_asset_injector.gd"
 
 [input]
 move_forward={"deadzone": 0.2, "events": [Object(InputEventKey,"physical_keycode":87), Object(InputEventKey,"physical_keycode":4194320)]}
