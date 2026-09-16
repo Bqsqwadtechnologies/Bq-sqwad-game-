@@ -67,13 +67,11 @@ func _add_detailed_building(parent: Node3D, position: Vector3, size: Vector3, re
         for col in range(cols):
             var wx := -size.x * 0.42 + float(col) * (size.x * 0.84 / max(1, cols - 1))
             var wy := -size.y * 0.38 + float(row) * (size.y * 0.76 / max(1, rows - 1))
-            _box(root, Vector3(wx, wy, -size.z * 0.545), Vector3(1.35, 1.15, 0.08), Color(0.10, 0.40, 0.62), "Window")
+            _box(root, Vector3(wx, wy, -size.z * 0.545), Vector3(1.35, 1.15, 0.08), Color(0.10, 0.40, 0.62), "WindowFrame")
 
     _box(root, Vector3(0, -size.y * 0.31, -size.z * 0.60), Vector3(min(5.0, size.x * 0.3), size.y * 0.22, 0.18), Color(0.08, 0.22, 0.34), "EntranceCanopy")
     _box(root, Vector3(0, -size.y * 0.42, -size.z * 0.60), Vector3(2.8, 0.08, 1.6), Color(0.12, 0.35, 0.5), "EntrancePlaza")
 
-    # Use the supplied interior photography as an entrance/lobby display.
-    # It sits behind a dark frame so it reads as a glazed lobby rather than a flat label.
     _add_facade(root, INTERIOR_REFERENCES[interior_index % INTERIOR_REFERENCES.size()], Vector3(0, -size.y * 0.30, -size.z * 0.615), Vector2(min(5.4, size.x * 0.34), min(3.0, size.y * 0.25)), 0.0, "UploadedInteriorLobby")
     _box(root, Vector3(0, -size.y * 0.30, -size.z * 0.625), Vector3(min(5.8, size.x * 0.38), 0.18, 0.18), Color(0.18, 0.30, 0.40), "LobbyFrameTop")
 
@@ -100,11 +98,14 @@ func _add_facade(parent: Node3D, texture: Texture2D, position: Vector3, size: Ve
     plane.size = size
     mesh.mesh = plane
     mesh.position = position
-    mesh.rotation.y = rotation_y
+    # PlaneMesh is horizontal by default. Rotate it upright so the supplied
+    # photographs are visible as true building facade/lobby surfaces.
+    mesh.rotation = Vector3(-PI * 0.5, rotation_y, 0.0)
     var material := StandardMaterial3D.new()
     material.albedo_texture = texture
     material.roughness = 0.82
     material.cull_mode = BaseMaterial3D.CULL_DISABLED
+    material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
     mesh.material_override = material
     parent.add_child(mesh)
 
