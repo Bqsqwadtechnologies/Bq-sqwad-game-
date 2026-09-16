@@ -50,7 +50,7 @@ func _build_ui() -> void:
     settings_button.text = "⚙ SETTINGS"
     settings_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
     settings_button.size = Vector2(118, 42)
-    settings_button.position = Vector2(-135, 242)
+    settings_button.position = Vector2(-135, 290)
     settings_button.pressed.connect(toggle_settings)
     add_child(settings_button)
 
@@ -199,7 +199,7 @@ func _on_viewport_resized() -> void:
         panel.size = Vector2(710, 610)
         panel.position = Vector2((viewport_size.x - panel.size.x) * 0.5, (viewport_size.y - panel.size.y) * 0.5)
     if settings_button != null:
-        settings_button.position = Vector2(-135, 242)
+        settings_button.position = Vector2(-135, 290)
 
 func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
