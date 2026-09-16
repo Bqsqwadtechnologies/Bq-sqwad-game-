@@ -91,7 +91,7 @@ func _electric_strike(player: CharacterBody3D, damage: int) -> void:
 
 func _energy_burst(player: CharacterBody3D, damage: int) -> void:
     _ray_damage(player, damage, 12.0)
-    ability_used.emit("Laser Burst")
+    ability_used.emit("Energy Burst")
 
 func _tech_construct(player: CharacterBody3D, damage: int) -> void:
     _ray_damage(player, damage, 8.0)
