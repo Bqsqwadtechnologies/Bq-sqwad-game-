@@ -15,8 +15,6 @@ env:
   ANDROID_HOME: /usr/local/lib/android/sdk
   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
 
-auto_cancel: true
-
 jobs:
   build-test-apk:
     name: Build Android Test APK
@@ -52,7 +50,6 @@ jobs:
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg
-          mkdir -p assets/audio/music
           shopt -s nullglob
           converted=0
           for source in assets/audio/music/*.m4a; do
