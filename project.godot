@@ -1,6 +1,6 @@
 ; BQ Sqwad Game — Landly City
 ; Godot 4.7.2 stable
-; Production foundation: Phase 1 prototype
+; Production foundation: adaptive Android-first city prototype
 
 config_version=5
 
@@ -15,6 +15,7 @@ window/size/viewport_height=720
 window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [rendering]
 renderer/rendering_method="gl_compatibility"
