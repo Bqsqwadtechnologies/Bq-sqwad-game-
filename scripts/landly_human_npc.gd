@@ -70,6 +70,7 @@ func _build_navigation_agent() -> void:
     navigation_agent.avoidance_enabled = bool(get_meta("npc_avoidance", false))
     navigation_agent.max_neighbors = 8
     navigation_agent.neighbor_distance = 3.5
+    navigation_agent.velocity_computed.connect(Callable(_on_velocity_computed))
     add_child(navigation_agent)
 
 func _begin_navigation() -> void:
@@ -119,13 +120,13 @@ func _physics_process(delta: float) -> void:
         return
 
     direction = direction.normalized()
-    velocity.x = direction.x * movement_speed
-    velocity.z = direction.z * movement_speed
-    velocity.y = 0.0
+    var desired_velocity := direction * movement_speed
+    desired_velocity.y = 0.0
 
     if navigation_agent.avoidance_enabled:
-        navigation_agent.velocity = velocity
+        navigation_agent.velocity = desired_velocity
     else:
+        velocity = desired_velocity
         move_and_slide()
 
     _face_direction(direction, delta)
