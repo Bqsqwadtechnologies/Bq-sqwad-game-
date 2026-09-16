@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "purpose": "Professional character asset pipeline for Landly City",
+  "source_of_truth": "Each character's uploaded reference photo in their own folder",
+  "required_runtime_asset_sets": [
+    "reference_front",
+    "turnaround_back",
+    "left_profile",
+    "right_profile",
+    "hand_detail",
+    "face_detail",
+    "full_body_rigged_3d",
+    "collision_proxy",
+    "lod_mobile"
+  ],
+  "rules": {
+    "preserve_identity": true,
+    "preserve_costume": true,
+    "preserve_equipment": true,
+    "preserve_locked_design_areas": true,
+    "no_cartoonization": true,
+    "no_unapproved_weapon_changes": true,
+    "no_random_logos": true,
+    "mobile_lod_required": true
+  },
+  "characters": {
+    "ziking": {"reference": "res://assets/characters/ziking/grok_1789575920234.jpg", "power": "Control"},
+    "goodshina": {"reference": "res://assets/characters/goodshina/grok_1789576237435.jpg", "power": "Disappearance / Teleportation / Yellow Electricity"},
+    "star": {"reference": "res://assets/characters/star/grok_1789574690102.jpg", "power": "Flight / Hand Energy / Enhanced Speed", "locked": ["shirt_front", "logo_marking", "mask"]},
+    "ella": {"reference": "res://assets/characters/ella/grok_1789576830599.jpg", "power": "Ring Teleportation / Technology Constructs"},
+    "ep": {"reference": "res://assets/characters/ep/grok_1789576589991.jpg", "power": "Super Speed / Energy Blade Projection"}
+  },
+  "implementation_note": "A JPG reference is not itself a rigged 3D character. The runtime should use an actual rigged mesh when supplied; until then the reference remains the canonical visual specification and must not be falsely treated as a 3D model."
+}
