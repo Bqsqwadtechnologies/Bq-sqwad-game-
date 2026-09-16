@@ -35,7 +35,7 @@ func use_primary() -> void:
 
     match id:
         "ziking":
-            _power_strike(player, 55)
+            _control_target(player, 4.5)
         "goodshina":
             _electric_strike(player, 45)
         "star":
@@ -57,7 +57,7 @@ func use_secondary() -> void:
 
     match id:
         "ziking":
-            _iron_guard()
+            _control_guard()
         "goodshina":
             _vanish_blink(player)
         "star":
@@ -69,9 +69,21 @@ func use_secondary() -> void:
 
     _start_cooldown("secondary")
 
-func _power_strike(player: CharacterBody3D, damage: int) -> void:
-    _ray_damage(player, damage, 4.5)
-    ability_used.emit("Power Strike")
+func _control_target(player: CharacterBody3D, distance: float) -> void:
+    var target := _ray_target(player, distance)
+    if target != null and target.has_method("apply_control"):
+        target.apply_control(3.0)
+        ability_used.emit("Control")
+    else:
+        ability_used.emit("Control — no target")
+
+func _control_guard() -> void:
+    invulnerable = true
+    power_state_changed.emit("Control Guard", true)
+    await get_tree().create_timer(3.0).timeout
+    invulnerable = false
+    power_state_changed.emit("Control Guard", false)
+    ability_used.emit("Control Guard")
 
 func _electric_strike(player: CharacterBody3D, damage: int) -> void:
     _ray_damage(player, damage, 6.0)
@@ -88,14 +100,6 @@ func _tech_construct(player: CharacterBody3D, damage: int) -> void:
 func _blade_shot(player: CharacterBody3D, damage: int) -> void:
     _ray_damage(player, damage, 14.0)
     ability_used.emit("Blade Shot")
-
-func _iron_guard() -> void:
-    invulnerable = true
-    power_state_changed.emit("Iron Guard", true)
-    await get_tree().create_timer(3.0).timeout
-    invulnerable = false
-    power_state_changed.emit("Iron Guard", false)
-    ability_used.emit("Iron Guard")
 
 func _vanish_blink(player: CharacterBody3D) -> void:
     hidden = true
@@ -128,7 +132,7 @@ func _speed_burst(player: CharacterBody3D) -> void:
     player.velocity += forward * 16.0
     ability_used.emit("Speed Burst")
 
-func _ray_damage(player: CharacterBody3D, damage: int, distance: float) -> void:
+func _ray_target(player: CharacterBody3D, distance: float) -> Node3D:
     var space_state := player.get_world_3d().direct_space_state
     var forward := -player.global_transform.basis.z
     var from := player.global_position + Vector3.UP * 1.1
@@ -136,9 +140,10 @@ func _ray_damage(player: CharacterBody3D, damage: int, distance: float) -> void:
     var query := PhysicsRayQueryParameters3D.create(from, to)
     query.exclude = [player]
     var result := space_state.intersect_ray(query)
-    if result.is_empty():
-        return
-    var target := result.get("collider") as Node3D
+    return result.get("collider") as Node3D if not result.is_empty() else null
+
+func _ray_damage(player: CharacterBody3D, damage: int, distance: float) -> void:
+    var target := _ray_target(player, distance)
     if target != null and target.has_method("take_damage"):
         target.take_damage(damage)
 
