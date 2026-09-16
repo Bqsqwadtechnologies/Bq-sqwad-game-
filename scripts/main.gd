@@ -5,6 +5,7 @@ const CITY_LANDMARKS := preload("res://scripts/city_landmarks.gd")
 const CITY_PROPS := preload("res://scripts/city_props.gd")
 const MISSION_INTERACTION := preload("res://scripts/mission_interaction.gd")
 const CITY_EXPANSION := preload("res://scripts/city_expansion.gd")
+const CITY_LIFE := preload("res://scripts/city_life.gd")
 
 var city: Node3D
 var landmarks: Node3D
@@ -59,8 +60,8 @@ func _build_landly_city_prototype() -> void:
     city.add_child(landmarks)
     CITY_LANDMARKS.new().build(landmarks)
 
-    # Stage 8 city expansion: public life, education, transport, defence and vertical landmarks.
     CITY_EXPANSION.new().build(city)
+    CITY_LIFE.new().build(city)
 
 func _add_secondary_roads(parent: Node3D) -> void:
     var horizontal_roads := [-36.0, 36.0]
