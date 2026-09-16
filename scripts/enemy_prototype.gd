@@ -10,6 +10,7 @@ var health := 100
 var origin := Vector3.ZERO
 var patrol_time := 0.0
 var defeated_state := false
+var control_time_remaining := 0.0
 
 func _ready() -> void:
     origin = global_position
@@ -17,6 +18,17 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
     if defeated_state:
+        return
+
+    if control_time_remaining > 0.0:
+        control_time_remaining = max(0.0, control_time_remaining - delta)
+        velocity.x = move_toward(velocity.x, 0.0, patrol_speed * delta * 4.0)
+        velocity.z = move_toward(velocity.z, 0.0, patrol_speed * delta * 4.0)
+        if not is_on_floor():
+            velocity.y -= 18.0 * delta
+        else:
+            velocity.y = 0.0
+        move_and_slide()
         return
 
     patrol_time += delta
@@ -40,6 +52,9 @@ func _physics_process(delta: float) -> void:
         velocity.y = 0.0
 
     move_and_slide()
+
+func apply_control(duration: float = 3.0) -> void:
+    control_time_remaining = max(control_time_remaining, duration)
 
 func take_damage(amount: int) -> void:
     if defeated_state:
