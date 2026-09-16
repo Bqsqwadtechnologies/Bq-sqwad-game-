@@ -8,13 +8,15 @@ const ROSTER := [
         "id": "ziking",
         "codename": "Ziking",
         "real_name": "Isaac Umogane",
-        "role": "Leader",
+        "role": "Leader / Controller",
         "faction": "BQ Sqwad",
         "health": 120,
         "speed": 7.0,
         "power": 40,
-        "superpowers": ["Super Strength", "Indestructibility"],
-        "abilities": ["Power Strike", "Iron Guard"],
+        "superpowers": ["Control"],
+        "abilities": ["Control", "Control Guard"],
+        "reference_image": "res://assets/characters/ziking/ziking_reference.jpg",
+        "visual_reference_is_source_of_truth": true,
         "weapon_slots": 2,
         "weapon_grade": "Advanced",
         "weapon_types": ["Advanced Sidearm", "Advanced Heavy Weapon"]
@@ -23,16 +25,18 @@ const ROSTER := [
         "id": "goodshina",
         "codename": "Goodshina",
         "real_name": "Goodness Umogane",
-        "role": "Stealth",
+        "role": "Stealth / Recon",
         "faction": "BQ Sqwad",
         "health": 90,
         "speed": 8.5,
         "power": 35,
         "superpowers": ["Disappearance", "Teleportation", "Yellow Electricity"],
         "abilities": ["Vanish", "Blink", "Electric Strike"],
+        "reference_image": "res://assets/characters/goodshina/grok_1789576237435.jpg",
+        "visual_reference_is_source_of_truth": true,
         "weapon_slots": 2,
         "weapon_grade": "Advanced",
-        "weapon_types": ["Advanced Sidearm", "Energy Blade"]
+        "weapon_types": ["Established Equipment"]
     },
     {
         "id": "star",
@@ -44,10 +48,12 @@ const ROSTER := [
         "speed": 9.0,
         "power": 38,
         "superpowers": ["Flight", "Hand Lasers", "Enhanced Speed"],
-        "abilities": ["Flight", "Laser Burst", "Twin Blade"] ,
-        "weapon_slots": 3,
+        "abilities": ["Flight", "Laser Burst", "Twin Blade"],
+        "reference_image": "res://assets/characters/star/star_reference.png",
+        "visual_reference_is_source_of_truth": true,
+        "weapon_slots": 2,
         "weapon_grade": "Advanced",
-        "weapon_types": ["Advanced Sidearm", "Twin Energy Blades", "Aerial Weapon"]
+        "weapon_types": ["Twin Blades"]
     },
     {
         "id": "ella",
@@ -60,9 +66,11 @@ const ROSTER := [
         "power": 32,
         "superpowers": ["Ring Teleportation"],
         "abilities": ["Tech Construct", "Teleport"],
+        "reference_image": "res://assets/characters/ella/ella_reference.png",
+        "visual_reference_is_source_of_truth": true,
         "weapon_slots": 3,
         "weapon_grade": "Advanced",
-        "weapon_types": ["Tech Weapon", "Construct Device", "Tech Vehicle"]
+        "weapon_types": ["Established Tech Equipment"]
     },
     {
         "id": "ep",
@@ -75,9 +83,11 @@ const ROSTER := [
         "power": 34,
         "superpowers": ["Super Speed", "Energy Blade Projection"],
         "abilities": ["Speed Burst", "Blade Shot"],
+        "reference_image": "res://assets/characters/ep/ep_reference.png",
+        "visual_reference_is_source_of_truth": true,
         "weapon_slots": 2,
         "weapon_grade": "Advanced",
-        "weapon_types": ["Advanced Sidearm", "Advanced Speed Weapon"]
+        "weapon_types": ["Established Firearm Equipment", "Glove Blades"]
     }
 ]
 
