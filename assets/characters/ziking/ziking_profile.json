@@ -1,0 +1,11 @@
+{
+  "character_id": "ziking",
+  "display_name": "Ziking",
+  "team": "BQ SQWAD",
+  "world": "LANDLY CITY",
+  "role": "leader",
+  "superpower": "control",
+  "reference_image": "res://assets/characters/ziking/ziking_reference.jpg",
+  "visual_reference_is_source_of_truth": true,
+  "notes": "Use the supplied Ziking reference image as the canonical visual reference. Preserve identity, face, hairstyle, skin tone, costume, proportions, and established equipment when building the in-game character."
+}
