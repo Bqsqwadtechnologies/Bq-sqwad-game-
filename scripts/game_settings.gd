@@ -6,6 +6,7 @@ const DEFAULT_PORT := 24580
 
 var panel: PanelContainer
 var music_slider: HSlider
+var area_sound_slider: HSlider
 var master_slider: HSlider
 var fullscreen_check: CheckButton
 var address_edit: LineEdit
@@ -27,6 +28,7 @@ func _load_settings() -> void:
 
 func _save_settings() -> void:
     config.set_value("audio", "music_volume", music_slider.value if music_slider else 0.8)
+    config.set_value("audio", "area_sound_volume", area_sound_slider.value if area_sound_slider else 0.65)
     config.set_value("audio", "master_volume", master_slider.value if master_slider else 1.0)
     config.set_value("display", "fullscreen", fullscreen_check.button_pressed if fullscreen_check else false)
     config.save(SETTINGS_PATH)
@@ -39,8 +41,8 @@ func _build_ui() -> void:
     add_child(backdrop)
 
     panel = PanelContainer.new()
-    panel.position = Vector2(285, 70)
-    panel.size = Vector2(710, 580)
+    panel.position = Vector2(285, 55)
+    panel.size = Vector2(710, 610)
     add_child(panel)
 
     var margin := MarginContainer.new()
@@ -51,7 +53,7 @@ func _build_ui() -> void:
     panel.add_child(margin)
 
     var column := VBoxContainer.new()
-    column.add_theme_constant_override("separation", 10)
+    column.add_theme_constant_override("separation", 9)
     margin.add_child(column)
 
     var title := Label.new()
@@ -66,6 +68,8 @@ func _build_ui() -> void:
 
     music_slider = _add_slider(column, "MUSIC VOLUME", 0.0, 1.0, float(config.get_value("audio", "music_volume", 0.8)))
     music_slider.value_changed.connect(_on_music_volume_changed)
+    area_sound_slider = _add_slider(column, "AREA SOUNDS / AMBIENCE", 0.0, 1.0, float(config.get_value("audio", "area_sound_volume", 0.65)))
+    area_sound_slider.value_changed.connect(_on_area_sound_volume_changed)
     master_slider = _add_slider(column, "MASTER VOLUME", 0.0, 1.0, float(config.get_value("audio", "master_volume", 1.0)))
     master_slider.value_changed.connect(_on_master_volume_changed)
 
@@ -76,7 +80,7 @@ func _build_ui() -> void:
     column.add_child(fullscreen_check)
 
     var controls := Label.new()
-    controls.text = "CONTROLS  •  WASD / ARROWS Move   •   SPACE Jump   •   E Interact   •   F Combat   •   Q / R Abilities   •   M Map   •   ESC Settings"
+    controls.text = "CONTROLS  •  WASD / ARROWS Move   •   SPACE Jump   •   E Interact   •   F Action   •   Q / R Abilities   •   M Map   •   ESC Settings"
     controls.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     controls.add_theme_font_size_override("font_size", 13)
     column.add_child(controls)
@@ -183,6 +187,12 @@ func _on_music_volume_changed(value: float) -> void:
         audio.set_music_volume(value)
     _save_settings()
 
+func _on_area_sound_volume_changed(value: float) -> void:
+    var audio := get_node_or_null("/root/BQGameAudio")
+    if audio != null and audio.has_method("set_area_sound_volume"):
+        audio.set_area_sound_volume(value)
+    _save_settings()
+
 func _on_master_volume_changed(value: float) -> void:
     AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), linear_to_db(max(value, 0.001)))
     _save_settings()
@@ -197,8 +207,11 @@ func _on_fullscreen_toggled(enabled: bool) -> void:
 func _apply_saved_settings() -> void:
     _on_master_volume_changed(float(config.get_value("audio", "master_volume", 1.0)))
     var audio := get_node_or_null("/root/BQGameAudio")
-    if audio != null and audio.has_method("set_music_volume"):
-        audio.set_music_volume(float(config.get_value("audio", "music_volume", 0.8)))
+    if audio != null:
+        if audio.has_method("set_music_volume"):
+            audio.set_music_volume(float(config.get_value("audio", "music_volume", 0.8)))
+        if audio.has_method("set_area_sound_volume"):
+            audio.set_area_sound_volume(float(config.get_value("audio", "area_sound_volume", 0.65)))
     _on_fullscreen_toggled(bool(config.get_value("display", "fullscreen", false)))
 
 func _host_session() -> void:
@@ -234,8 +247,10 @@ func _read_port() -> int:
 
 func _reset_settings() -> void:
     music_slider.value = 0.8
+    area_sound_slider.value = 0.65
     master_slider.value = 1.0
     fullscreen_check.button_pressed = false
     _save_settings()
     _on_music_volume_changed(0.8)
+    _on_area_sound_volume_changed(0.65)
     _on_master_volume_changed(1.0)
