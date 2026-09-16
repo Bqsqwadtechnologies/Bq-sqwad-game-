@@ -17,6 +17,16 @@ const INTERIOR_REFERENCES := [
     preload("res://assets/world/landly_city/interiors/grok_1789481907180.jpg")
 ]
 
+const ONLINE_CITY_ROOT := "res://assets/world/landly_city/kenney_city/"
+const ONLINE_BUILDINGS := [
+    "building-type-a.glb",
+    "building-type-c.glb",
+    "building-type-e.glb",
+    "building-type-g.glb",
+    "building-type-k.glb",
+    "building-type-n.glb"
+]
+
 func build(parent: Node3D) -> void:
     _add_parking(parent, Vector3(-22, 0.12, -18), Vector3(10, 0.12, 16))
     _add_parking(parent, Vector3(22, 0.12, -18), Vector3(10, 0.12, 16))
@@ -27,6 +37,7 @@ func build(parent: Node3D) -> void:
     _add_sign(parent, Vector3(-7, 2.0, 18), "HQ")
     _add_sign(parent, Vector3(7, 2.0, 18), "MISSION")
     _build_uploaded_landly_buildings(parent)
+    _add_online_city_landmarks(parent)
 
 func _build_uploaded_landly_buildings(parent: Node3D) -> void:
     var data := [
@@ -40,6 +51,53 @@ func _build_uploaded_landly_buildings(parent: Node3D) -> void:
     for index in range(data.size()):
         var item: Dictionary = data[index]
         _add_detailed_building(parent, item["p"], item["s"], int(item["ref"]), index, String(item["name"]), String(item["label"]))
+
+func _add_online_city_landmarks(parent: Node3D) -> void:
+    # The CI build downloads these CC0 glTF models into the project before Godot imports it.
+    # Keep the uploaded-photo reference buildings as identity landmarks, while these real
+    # 3D assets provide proper geometry, roofs, walls and silhouettes throughout the city.
+    var placements := [
+        {"p": Vector3(-52, 0.0, -36), "scale": 5.2, "name": "Online3DCommercialA", "title": "LANDLY MARKET"},
+        {"p": Vector3(-45, 0.0, -36), "scale": 5.0, "name": "Online3DCommercialB", "title": "LANDLY SHOPS"},
+        {"p": Vector3(46, 0.0, -34), "scale": 5.4, "name": "Online3DResidentialA", "title": "LANDLY RESIDENCES EAST"},
+        {"p": Vector3(52, 0.0, 34), "scale": 5.6, "name": "Online3DResidentialB", "title": "LANDLY VILLAS"},
+        {"p": Vector3(-48, 0.0, 34), "scale": 5.1, "name": "Online3DCommunityA", "title": "LANDLY COMMUNITY"},
+        {"p": Vector3(0, 0.0, -48), "scale": 5.8, "name": "Online3DCommunityB", "title": "LANDLY CITY BLOCK"}
+    ]
+    for i in range(placements.size()):
+        var item: Dictionary = placements[i]
+        _add_online_model(parent, item["p"], float(item["scale"]), ONLINE_BUILDINGS[i % ONLINE_BUILDINGS.size()], String(item["name"]), String(item["title"]))
+
+    _add_online_model(parent, Vector3(-53, 0.0, 42), 4.5, "tree-large.glb", "LandlyTreeLarge", "")
+    _add_online_model(parent, Vector3(-43, 0.0, 42), 3.8, "tree-small.glb", "LandlyTreeSmallA", "")
+    _add_online_model(parent, Vector3(43, 0.0, 42), 4.0, "tree-small.glb", "LandlyTreeSmallB", "")
+    _add_online_model(parent, Vector3(53, 0.0, 42), 4.5, "tree-large.glb", "LandlyTreeLargeB", "")
+
+func _add_online_model(parent: Node3D, position: Vector3, uniform_scale: float, filename: String, node_name: String, title: String) -> void:
+    var path := ONLINE_CITY_ROOT + filename
+    var packed := ResourceLoader.load(path) as PackedScene
+    if packed == null:
+        return
+    var instance := packed.instantiate()
+    if not instance is Node3D:
+        instance.queue_free()
+        return
+    var root := Node3D.new()
+    root.name = node_name
+    root.position = position
+    root.scale = Vector3.ONE * uniform_scale
+    parent.add_child(root)
+    root.add_child(instance)
+    if title != "":
+        var label := Label3D.new()
+        label.name = "DistrictTitle"
+        label.text = title
+        label.font_size = 18
+        label.outline_size = 6
+        label.position = Vector3(0, 3.8, 0)
+        label.modulate = Color(0.62, 0.88, 1.0)
+        label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+        root.add_child(label)
 
 func _add_detailed_building(parent: Node3D, position: Vector3, size: Vector3, reference_index: int, interior_index: int, building_name: String, title: String) -> void:
     var root := Node3D.new()
@@ -98,8 +156,6 @@ func _add_facade(parent: Node3D, texture: Texture2D, position: Vector3, size: Ve
     plane.size = size
     mesh.mesh = plane
     mesh.position = position
-    # PlaneMesh is horizontal by default. Rotate it upright so the supplied
-    # photographs are visible as true building facade/lobby surfaces.
     mesh.rotation = Vector3(-PI * 0.5, rotation_y, 0.0)
     var material := StandardMaterial3D.new()
     material.albedo_texture = texture
