@@ -26,7 +26,7 @@ height = 0.72
 albedo_color = Color(0.18, 0.22, 0.28, 1)
 roughness = 0.65
 
-[node name="Ziking" type="CharacterBody3D"]
+[node name="Ziking" type="CharacterBody3D" groups=["player"]]
 script = ExtResource("1_player")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
