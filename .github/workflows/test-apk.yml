@@ -15,11 +15,13 @@ env:
   ANDROID_HOME: /usr/local/lib/android/sdk
   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
 
+auto_cancel: true
+
 jobs:
   build-test-apk:
     name: Build Android Test APK
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
 
     steps:
       - name: Checkout main
@@ -44,6 +46,23 @@ jobs:
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
           java -version
           "$ANDROID_HOME/platform-tools/adb" version
+
+      - name: Prepare uploaded audio for Godot
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          mkdir -p assets/audio/music
+          shopt -s nullglob
+          converted=0
+          for source in assets/audio/music/*.m4a; do
+            base="${source%.m4a}"
+            target="${base}.ogg"
+            ffmpeg -hide_banner -loglevel error -y -i "$source" -vn -c:a libvorbis -q:a 5 "$target"
+            converted=$((converted + 1))
+          done
+          echo "Converted $converted uploaded M4A music files to temporary Godot-compatible OGG assets."
+          find assets/audio/music -maxdepth 1 -type f \( -name '*.ogg' -o -name '*.m4a' \) -print | sort
 
       - name: Download Godot
         run: |
