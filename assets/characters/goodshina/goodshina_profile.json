@@ -1,0 +1,12 @@
+{
+  "character_id": "goodshina",
+  "display_name": "Goodshina",
+  "real_name": "Goodness Umogane",
+  "team": "BQ SQWAD",
+  "world": "LANDLY CITY",
+  "role": "stealth",
+  "superpowers": ["disappearance", "teleportation", "yellow electricity"],
+  "visual_reference_source": "uploaded finished Goodshina character image",
+  "visual_reference_is_source_of_truth": true,
+  "notes": "Use the supplied finished Goodshina reference image as the canonical visual reference. Preserve identity, face, hairstyle, skin tone, costume, proportions, equipment, mask and all visible details exactly when the image asset is imported into the game. Do not redesign or cartoonize the character."
+}
