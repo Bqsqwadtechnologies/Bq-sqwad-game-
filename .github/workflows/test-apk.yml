@@ -45,6 +45,22 @@ jobs:
           java -version
           "$ANDROID_HOME/platform-tools/adb" version
 
+      - name: Download CC0 3D city assets
+        run: |
+          set -euo pipefail
+          base="https://raw.githubusercontent.com/shorepine/kenney/main/3d/city-kit-suburban"
+          target="assets/world/landly_city/kenney_city"
+          mkdir -p "$target/Textures"
+          wget -q "$base/Textures/colormap.png" -O "$target/Textures/colormap.png"
+          for model in building-type-a building-type-c building-type-e building-type-g building-type-k building-type-n tree-small tree-large fence driveway-long; do
+            wget -q "$base/${model}.glb" -O "$target/${model}.glb"
+          done
+          test -s "$target/Textures/colormap.png"
+          for model in building-type-a building-type-c building-type-e building-type-g building-type-k building-type-n tree-small tree-large fence driveway-long; do
+            test -s "$target/${model}.glb"
+          done
+          find "$target" -maxdepth 2 -type f -print | sort
+
       - name: Prepare uploaded audio for Godot
         run: |
           set -euo pipefail
