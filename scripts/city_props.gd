@@ -2,6 +2,12 @@ extends RefCounted
 
 const WORLD_MATERIALS := preload("res://scripts/world_materials.gd")
 
+const BUILDING_REFERENCES := [
+    preload("res://assets/world/landly_city/buildings/grok_1789481894997.jpg"),
+    preload("res://assets/world/landly_city/buildings/grok_1789481899017.jpg"),
+    preload("res://assets/world/landly_city/buildings/grok_1789481912498.jpg")
+]
+
 func build(parent: Node3D) -> void:
     _add_parking(parent, Vector3(-22, 0.12, -18), Vector3(10, 0.12, 16))
     _add_parking(parent, Vector3(22, 0.12, -18), Vector3(10, 0.12, 16))
@@ -11,6 +17,85 @@ func build(parent: Node3D) -> void:
     _add_barrier_line(parent, Vector3(8, 0.45, 28), 6)
     _add_sign(parent, Vector3(-7, 2.0, 18), "HQ")
     _add_sign(parent, Vector3(7, 2.0, 18), "MISSION")
+    _build_uploaded_landly_buildings(parent)
+
+func _build_uploaded_landly_buildings(parent: Node3D) -> void:
+    var data := [
+        {"p": Vector3(-28, 7.0, -25), "s": Vector3(20, 14, 16), "ref": 0, "name": "LandlyReferenceTowerA", "label": "LANDLY BUSINESS CENTER"},
+        {"p": Vector3(28, 9.0, -25), "s": Vector3(22, 18, 16), "ref": 1, "name": "LandlyReferenceTowerB", "label": "LANDLY FINANCE PLAZA"},
+        {"p": Vector3(-28, 6.0, 25), "s": Vector3(18, 12, 20), "ref": 2, "name": "LandlyReferenceTowerC", "label": "LANDLY RESIDENCES"},
+        {"p": Vector3(28, 8.0, 25), "s": Vector3(24, 16, 18), "ref": 0, "name": "LandlyReferenceTowerD", "label": "LANDLY TECHNOLOGY HUB"},
+        {"p": Vector3(-48, 5.5, 0), "s": Vector3(14, 11, 20), "ref": 1, "name": "LandlyReferenceTowerE", "label": "LANDLY CIVIC CENTER"},
+        {"p": Vector3(48, 6.5, 0), "s": Vector3(16, 13, 22), "ref": 2, "name": "LandlyReferenceTowerF", "label": "LANDLY MEDICAL CENTER"}
+    ]
+    for item in data:
+        _add_detailed_building(parent, item.p, item.s, int(item.ref), String(item.name), String(item.label))
+
+func _add_detailed_building(parent: Node3D, position: Vector3, size: Vector3, reference_index: int, building_name: String, title: String) -> void:
+    var root := Node3D.new()
+    root.name = building_name
+    root.position = position
+    parent.add_child(root)
+
+    var body := StaticBody3D.new()
+    body.name = "Structure"
+    root.add_child(body)
+    _box(body, Vector3.ZERO, size, Color(0.045, 0.075, 0.11), "Structure")
+
+    var reference := BUILDING_REFERENCES[reference_index % BUILDING_REFERENCES.size()]
+    _add_facade(root, reference, Vector3(0, 0.2, -size.z * 0.505), Vector2(size.x * 0.9, size.y * 0.88), 0.0, "ReferenceFacadeFront")
+    _add_facade(root, reference, Vector3(0, 0.2, size.z * 0.505), Vector2(size.x * 0.9, size.y * 0.88), PI, "ReferenceFacadeBack")
+
+    var frame_material := _material(Color(0.10, 0.15, 0.21), 0.58)
+    for x in [-size.x * 0.46, size.x * 0.46]:
+        _box(root, Vector3(x, 0.2, -size.z * 0.53), Vector3(0.28, size.y * 0.94, 0.34), Color(0.16, 0.22, 0.29), "FacadeColumn")
+    _box(root, Vector3(0, size.y * 0.47, -size.z * 0.53), Vector3(size.x * 0.96, 0.34, 0.36), Color(0.18, 0.28, 0.38), "RoofTrim")
+    _box(root, Vector3(0, -size.y * 0.47, -size.z * 0.53), Vector3(size.x * 0.96, 0.34, 0.36), Color(0.08, 0.12, 0.18), "BaseTrim")
+
+    var rows := max(3, int(size.y / 2.7))
+    var cols := max(4, int(size.x / 3.2))
+    for row in range(rows):
+        for col in range(cols):
+            var wx := -size.x * 0.42 + float(col) * (size.x * 0.84 / max(1, cols - 1))
+            var wy := -size.y * 0.38 + float(row) * (size.y * 0.76 / max(1, rows - 1))
+            _box(root, Vector3(wx, wy, -size.z * 0.545), Vector3(1.35, 1.15, 0.08), Color(0.10, 0.40, 0.62), "Window")
+
+    _box(root, Vector3(0, -size.y * 0.31, -size.z * 0.60), Vector3(min(5.0, size.x * 0.3), size.y * 0.22, 0.18), Color(0.08, 0.22, 0.34), "EntranceCanopy")
+    _box(root, Vector3(0, -size.y * 0.42, -size.z * 0.60), Vector3(2.8, 0.08, 1.6), Color(0.12, 0.35, 0.5), "EntrancePlaza")
+
+    for x in [-size.x * 0.35, 0.0, size.x * 0.35]:
+        _box(root, Vector3(x, size.y * 0.55, 0), Vector3(1.5, 0.5, 1.2), Color(0.09, 0.12, 0.16), "RoofEquipment")
+
+    var label := Label3D.new()
+    label.name = "BuildingTitle"
+    label.text = title
+    label.font_size = 22
+    label.outline_size = 7
+    label.position = Vector3(0, size.y * 0.31, -size.z * 0.62)
+    label.modulate = Color(0.62, 0.88, 1.0)
+    label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+    root.add_child(label)
+
+    # A restrained emissive strip makes the structures readable at night without
+    # turning the city into a flat neon block.
+    _box(root, Vector3(0, 0, -size.z * 0.565), Vector3(0.16, size.y * 0.78, 0.12), Color(0.12, 0.45, 0.7), "VerticalLight")
+    _box(root, Vector3(-size.x * 0.44, 0, -size.z * 0.565), Vector3(0.08, size.y * 0.78, 0.08), Color(0.08, 0.32, 0.52), "EdgeLight")
+    _ = frame_material
+
+func _add_facade(parent: Node3D, texture: Texture2D, position: Vector3, size: Vector2, rotation_y: float, label: String) -> void:
+    var mesh := MeshInstance3D.new()
+    mesh.name = label
+    var plane := PlaneMesh.new()
+    plane.size = size
+    mesh.mesh = plane
+    mesh.position = position
+    mesh.rotation.y = rotation_y
+    var material := StandardMaterial3D.new()
+    material.albedo_texture = texture
+    material.roughness = 0.82
+    material.cull_mode = BaseMaterial3D.CULL_DISABLED
+    mesh.material_override = material
+    parent.add_child(mesh)
 
 func _add_parking(parent: Node3D, position: Vector3, size: Vector3) -> void:
     var root := Node3D.new()
@@ -66,6 +151,12 @@ func _box(parent: Node3D, position: Vector3, size: Vector3, color: Color, label:
     box.size = size
     mesh.mesh = box
     mesh.position = position
-    mesh.material_override = WORLD_MATERIALS.make(color)
+    mesh.material_override = _material(color, 0.72)
     mesh.name = label
     parent.add_child(mesh)
+
+func _material(color: Color, roughness: float) -> StandardMaterial3D:
+    var material := StandardMaterial3D.new()
+    material.albedo_color = color
+    material.roughness = roughness
+    return material
