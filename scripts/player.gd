@@ -2,20 +2,33 @@ extends CharacterBody3D
 class_name BQPlayer
 
 signal movement_state_changed(moving: bool)
+signal health_changed(current: int, maximum: int)
+signal defeated
 
 @export var move_speed := 7.0
 @export var acceleration := 22.0
 @export var gravity := 20.0
 @export var jump_velocity := 7.0
 @export var turn_speed := 10.0
+@export var max_health := 100
 
 var is_moving := false
+var health := 100
+var defeated_state := false
 
 @onready var ability_system: BQAbilitySystem = $AbilitySystem
 @onready var body_mesh: MeshInstance3D = $Body
 @onready var head_mesh: MeshInstance3D = $Head
 
+func _ready() -> void:
+    health = max_health
+    health_changed.emit(health, max_health)
+
 func _physics_process(delta: float) -> void:
+    if defeated_state:
+        velocity = Vector3.ZERO
+        return
+
     var input_vector := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
     var direction := Vector3(input_vector.x, 0.0, input_vector.y)
     if direction.length_squared() > 1.0:
@@ -47,6 +60,27 @@ func _physics_process(delta: float) -> void:
         rotation.y = lerp_angle(rotation.y, target_rotation, turn_speed * delta)
 
     move_and_slide()
+
+func take_damage(amount: int) -> void:
+    if defeated_state or amount <= 0:
+        return
+    health = max(0, health - amount)
+    health_changed.emit(health, max_health)
+    if health == 0:
+        defeated_state = true
+        velocity = Vector3.ZERO
+        defeated.emit()
+
+func heal(amount: int) -> void:
+    if defeated_state or amount <= 0:
+        return
+    health = min(max_health, health + amount)
+    health_changed.emit(health, max_health)
+
+func reset_health() -> void:
+    defeated_state = false
+    health = max_health
+    health_changed.emit(health, max_health)
 
 func set_character_visibility(visible_state: bool) -> void:
     body_mesh.visible = visible_state
