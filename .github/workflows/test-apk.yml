@@ -33,6 +33,7 @@ jobs:
           test -f project.godot
           test -f scenes/main.tscn
           test -f scripts/city_props.gd
+          test -f scripts/landly_human_npc.gd
 
       - name: Setup Java 17
         uses: actions/setup-java@v5
@@ -59,10 +60,12 @@ jobs:
           set -euo pipefail
           rm -rf /tmp/modkit assets/world/landly_city/modkit
           mkdir -p /tmp/modkit assets/world/landly_city/modkit
-          wget -q --show-progress "https://github.com/JaronKBragg7337/asset-pack-ue-threejs-blender-unity/releases/download/${MODKIT_VERSION}/ModKit-v1.2.zip" -O /tmp/modkit.zip
+          wget -q --show-progress "https://github.com/JaronKBragg7337/asset-pack-ue-threejs-blender-unity/releases/download/${MODKIT_VERSION}/ModKit-v1.2-Industrial-Outpost.zip" -O /tmp/modkit.zip
           unzip -q /tmp/modkit.zip -d /tmp/modkit
-          test -s /tmp/modkit/examples/industrial_outpost/ModKit_Industrial_Outpost.glb
-          cp /tmp/modkit/examples/industrial_outpost/ModKit_Industrial_Outpost.glb assets/world/landly_city/modkit/ModKit_Industrial_Outpost.glb
+          asset="$(find /tmp/modkit -type f -name 'ModKit_Industrial_Outpost.glb' -print -quit)"
+          test -n "$asset"
+          test -s "$asset"
+          cp "$asset" assets/world/landly_city/modkit/ModKit_Industrial_Outpost.glb
           ls -lh assets/world/landly_city/modkit/ModKit_Industrial_Outpost.glb
 
       - name: Prepare uploaded audio for Godot
