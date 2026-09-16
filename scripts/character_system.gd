@@ -3,6 +3,9 @@ class_name BQCharacterSystem
 
 signal character_changed(character: Dictionary)
 
+# Canonical character registry. Reference photos are visual source-of-truth assets;
+# they are not treated as rigged 3D meshes. Each character is ready for a later
+# humanoid rig/model import without changing gameplay data.
 const ROSTER := [
     {
         "id": "ziking",
@@ -15,11 +18,14 @@ const ROSTER := [
         "power": 40,
         "superpowers": ["Control"],
         "abilities": ["Control", "Control Guard"],
-        "reference_image": "res://assets/characters/ziking/ziking_reference.jpg",
+        "reference_image": "res://assets/characters/ziking/grok_1789575920234.jpg",
         "visual_reference_is_source_of_truth": true,
+        "voice_asset": "res://assets/audio/voices/ziking/voice.ogg",
+        "voice_source": "character_voice_or_player_microphone",
         "weapon_slots": 2,
         "weapon_grade": "Advanced",
-        "weapon_types": ["Advanced Sidearm", "Advanced Heavy Weapon"]
+        "weapon_types": ["Advanced Sidearm", "Advanced Heavy Weapon"],
+        "animation_profile": "leader_combat"
     },
     {
         "id": "goodshina",
@@ -34,60 +40,73 @@ const ROSTER := [
         "abilities": ["Vanish", "Blink", "Electric Strike"],
         "reference_image": "res://assets/characters/goodshina/grok_1789576237435.jpg",
         "visual_reference_is_source_of_truth": true,
+        "voice_asset": "res://assets/audio/voices/goodshina/voice.ogg",
+        "voice_source": "character_voice_or_player_microphone",
         "weapon_slots": 2,
         "weapon_grade": "Advanced",
-        "weapon_types": ["Established Equipment"]
+        "weapon_types": ["Established Equipment"],
+        "animation_profile": "stealth_combat"
     },
     {
         "id": "star",
         "codename": "Star",
         "real_name": "Esther Umogane",
-        "role": "Aerial Energy",
+        "role": "Aerial Combat",
         "faction": "BQ Sqwad",
         "health": 100,
         "speed": 9.0,
         "power": 38,
-        "superpowers": ["Flight", "Hand Lasers", "Enhanced Speed"],
-        "abilities": ["Flight", "Laser Burst", "Twin Blade"],
-        "reference_image": "res://assets/characters/star/star_reference.png",
+        "superpowers": ["Flight", "Hand Energy", "Enhanced Speed"],
+        "abilities": ["Flight", "Energy Burst", "Twin Blade"],
+        "reference_image": "res://assets/characters/star/grok_1789574690102.jpg",
         "visual_reference_is_source_of_truth": true,
+        "voice_asset": "res://assets/audio/voices/star/voice.ogg",
+        "voice_source": "character_voice_or_player_microphone",
         "weapon_slots": 2,
         "weapon_grade": "Advanced",
-        "weapon_types": ["Twin Blades"]
+        "weapon_types": ["Twin Blades"],
+        "animation_profile": "aerial_blade_combat",
+        "locked_design_areas": ["shirt_front", "logo_marking", "mask"]
     },
     {
         "id": "ella",
         "codename": "Ella",
         "real_name": "Emmanuella Umogane",
-        "role": "Technology",
+        "role": "Technology / Teleportation",
         "faction": "BQ Sqwad",
         "health": 95,
         "speed": 6.5,
         "power": 32,
-        "superpowers": ["Ring Teleportation"],
-        "abilities": ["Tech Construct", "Teleport"],
-        "reference_image": "res://assets/characters/ella/ella_reference.png",
+        "superpowers": ["Ring Teleportation", "Technology Constructs"],
+        "abilities": ["Tech Construct", "Ring Teleport"],
+        "reference_image": "res://assets/characters/ella/grok_1789576830599.jpg",
         "visual_reference_is_source_of_truth": true,
+        "voice_asset": "res://assets/audio/voices/ella/voice.ogg",
+        "voice_source": "character_voice_or_player_microphone",
         "weapon_slots": 3,
         "weapon_grade": "Advanced",
-        "weapon_types": ["Established Tech Equipment"]
+        "weapon_types": ["Established Tech Equipment"],
+        "animation_profile": "tech_combat"
     },
     {
         "id": "ep",
         "codename": "EP",
         "real_name": "Ephraim Umogane",
-        "role": "Speed",
+        "role": "Speed / Striker",
         "faction": "BQ Sqwad",
         "health": 105,
         "speed": 12.0,
         "power": 34,
         "superpowers": ["Super Speed", "Energy Blade Projection"],
         "abilities": ["Speed Burst", "Blade Shot"],
-        "reference_image": "res://assets/characters/ep/ep_reference.png",
+        "reference_image": "res://assets/characters/ep/grok_1789576589991.jpg",
         "visual_reference_is_source_of_truth": true,
+        "voice_asset": "res://assets/audio/voices/ep/voice.ogg",
+        "voice_source": "character_voice_or_player_microphone",
         "weapon_slots": 2,
         "weapon_grade": "Advanced",
-        "weapon_types": ["Established Firearm Equipment", "Glove Blades"]
+        "weapon_types": ["Established Firearm Equipment", "Glove Blades"],
+        "animation_profile": "speed_combat"
     }
 ]
 
@@ -111,3 +130,15 @@ func select_character(character_id: String) -> bool:
 
 func get_active_character() -> Dictionary:
     return active_character.duplicate(true)
+
+func get_reference_image(character_id: String) -> String:
+    for character in ROSTER:
+        if String(character.get("id", "")) == character_id:
+            return String(character.get("reference_image", ""))
+    return ""
+
+func get_voice_asset(character_id: String) -> String:
+    for character in ROSTER:
+        if String(character.get("id", "")) == character_id:
+            return String(character.get("voice_asset", ""))
+    return ""
