@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/admin_dashboard.tscn" id="6_admin"]
 [ext_resource type="PackedScene" path="res://scenes/mobile_controls.tscn" id="7_mobile"]
 [ext_resource type="Script" path="res://scripts/progression_system.gd" id="8_progression"]
+[ext_resource type="Script" path="res://scripts/city_map.gd" id="9_map"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -123,7 +124,10 @@ offset_right = 850.0
 offset_bottom = 708.0
 theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 0.9)
 theme_override_font_sizes/font_size = 13
-text = "WASD / ARROWS  Move    •    SPACE  Jump    •    E  Investigate    •    F  Attack"
+text = "WASD / ARROWS  Move    •    SPACE  Jump    •    E  Investigate    •    F  Attack    •    M  Map"
+
+[node name="CityMap" type="CanvasLayer" parent="."]
+script = ExtResource("9_map")
 
 [node name="FloorMarker" type="StaticBody3D" parent="."]
 position = Vector3(0, -0.05, 8)
