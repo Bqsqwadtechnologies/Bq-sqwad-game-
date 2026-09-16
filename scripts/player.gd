@@ -22,6 +22,10 @@ var defeated_state := false
 
 func _ready() -> void:
     health = max_health
+    var character_system := get_node_or_null("CharacterSystem") as BQCharacterSystem
+    if character_system != null:
+        character_system.character_changed.connect(_on_character_changed)
+        _on_character_changed(character_system.get_active_character())
     health_changed.emit(health, max_health)
 
 func _physics_process(delta: float) -> void:
@@ -34,7 +38,7 @@ func _physics_process(delta: float) -> void:
     if direction.length_squared() > 1.0:
         direction = direction.normalized()
 
-    var character_system := $CharacterSystem as BQCharacterSystem
+    var character_system := get_node_or_null("CharacterSystem") as BQCharacterSystem
     var character := character_system.get_active_character() if character_system != null else {}
     var character_speed := float(character.get("speed", move_speed))
     var target := direction * character_speed
@@ -64,6 +68,8 @@ func _physics_process(delta: float) -> void:
 func take_damage(amount: int) -> void:
     if defeated_state or amount <= 0:
         return
+    if ability_system != null and ability_system.invulnerable:
+        return
     health = max(0, health - amount)
     health_changed.emit(health, max_health)
     if health == 0:
@@ -80,6 +86,12 @@ func heal(amount: int) -> void:
 func reset_health() -> void:
     defeated_state = false
     health = max_health
+    health_changed.emit(health, max_health)
+
+func _on_character_changed(character: Dictionary) -> void:
+    max_health = int(character.get("health", 100))
+    health = max_health
+    defeated_state = false
     health_changed.emit(health, max_health)
 
 func set_character_visibility(visible_state: bool) -> void:
