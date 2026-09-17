@@ -20,15 +20,85 @@ var unlocked_features: Array[String] = []
 
 var _save_timer := 0.0
 var _dirty := false
+var _hud_label: Label
+var _notice_label: Label
+var _notice_timer := 0.0
 
 func _ready() -> void:
     load_profile()
+    call_deferred("_connect_runtime_systems")
+    call_deferred("_create_profile_hud")
 
 func _process(delta: float) -> void:
     play_time_seconds += delta
     _save_timer += delta
+    if _notice_timer > 0.0:
+        _notice_timer = max(0.0, _notice_timer - delta)
+        if _notice_timer <= 0.0 and is_instance_valid(_notice_label):
+            _notice_label.visible = false
     if _dirty and _save_timer >= 5.0:
         save_profile()
+
+func _connect_runtime_systems() -> void:
+    if has_node("/root/BQEnemySystem") and not BQEnemySystem.enemy_defeated.is_connected(_on_enemy_defeated):
+        BQEnemySystem.enemy_defeated.connect(_on_enemy_defeated)
+    var scene := get_tree().current_scene
+    if scene != null:
+        var mission_system := scene.get_node_or_null("MissionSystem")
+        if mission_system != null and mission_system.has_signal("mission_completed") and not mission_system.mission_completed.is_connected(_on_mission_completed):
+            mission_system.mission_completed.connect(_on_mission_completed)
+
+func _create_profile_hud() -> void:
+    var scene := get_tree().current_scene
+    if scene == null:
+        return
+    var layer := CanvasLayer.new()
+    layer.name = "ProfileHUD"
+    scene.add_child(layer)
+    _hud_label = Label.new()
+    _hud_label.position = Vector2(930, 22)
+    _hud_label.size = Vector2(320, 70)
+    _hud_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    _hud_label.add_theme_font_size_override("font_size", 16)
+    _hud_label.add_theme_color_override("font_color", Color(0.65, 0.9, 1.0))
+    layer.add_child(_hud_label)
+    _notice_label = Label.new()
+    _notice_label.position = Vector2(430, 620)
+    _notice_label.size = Vector2(420, 60)
+    _notice_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    _notice_label.add_theme_font_size_override("font_size", 17)
+    _notice_label.add_theme_color_override("font_color", Color(0.75, 0.93, 1.0))
+    _notice_label.visible = false
+    layer.add_child(_notice_label)
+    credits_changed.connect(_refresh_hud)
+    profile_changed.connect(_refresh_hud)
+    notification_requested.connect(_show_notification)
+    _refresh_hud()
+
+func _refresh_hud(_unused = null) -> void:
+    if not is_instance_valid(_hud_label):
+        return
+    var hours := int(play_time_seconds) / 3600
+    var minutes := (int(play_time_seconds) % 3600) / 60
+    _hud_label.text = "CREDITS  %d\nLVL PROFILE  •  %02d:%02d" % [credits, hours, minutes]
+
+func _show_notification(title: String, message: String) -> void:
+    if not is_instance_valid(_notice_label):
+        return
+    _notice_label.text = "%s\n%s" % [title, message]
+    _notice_label.visible = true
+    _notice_timer = 3.0
+
+func _on_enemy_defeated(enemy: Node) -> void:
+    if enemy == null:
+        return
+    var enemy_type := String(enemy.get("enemy_type"))
+    var definition := BQEnemySystem.get_enemy_definition(enemy_type)
+    var reward := int(definition.get("credits", 0))
+    add_enemy_defeat(reward, enemy_type)
+
+func _on_mission_completed(xp_reward: int) -> void:
+    register_mission_completion(xp_reward)
 
 func add_credits(amount: int) -> void:
     if amount <= 0:
@@ -41,7 +111,8 @@ func add_credits(amount: int) -> void:
 func add_enemy_defeat(reward: int, enemy_type: String) -> void:
     enemies_defeated += 1
     add_credits(reward)
-    var progression := get_tree().current_scene.get_node_or_null("ProgressionSystem") if get_tree().current_scene else null
+    var scene := get_tree().current_scene
+    var progression := scene.get_node_or_null("ProgressionSystem") if scene else null
     if progression != null and progression.has_method("add_xp"):
         progression.add_xp(max(25, reward * 2))
     notification_requested.emit("ENEMY DEFEATED", "+%d credits  •  %s" % [reward, enemy_type.to_upper()])
